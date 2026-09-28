@@ -1,4 +1,4 @@
-# Smart Campus Management
+# Smart Campus Management "https://barathgd-coder.github.io/srm-ist-trichy-system-management-/"
 One site, two modules, one look (Smart Floor Manager theme):
 - **Floor Map**: 3D digital twin, room finder, navigation, squad (`floor.js`)
 - **Attendance**: calculator, OD simulator, timetable, Attendance Advisor chat (`attendance.js`)
