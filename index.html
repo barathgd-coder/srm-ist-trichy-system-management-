@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Campus Management</title>
+<meta name="description" content="Rooms, timetables and attendance: one smart campus dashboard.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css"></head><body data-mod="map">
+<div id="ld"><div class="wf"></div><div class="m t2" style="letter-spacing:.2em">BUILDING DIGITAL TWIN…</div></div>
+<div id="c" aria-label="3D floor map"></div>
+<section id="hero"><h1>SMART CAMPUS<br>MANAGEMENT</h1><p>Navigate your campus. Track your attendance. Move smarter.</p><div><button class="b p" id="ex">EXPLORE CAMPUS</button><button class="b" id="fr">FIND A ROOM</button><button class="b" id="ea">ATTENDANCE COMPASS</button></div></section>
+<div id="ui" style="opacity:0;pointer-events:none">
+<header id="topbar"><div class="logo">SMART CAMPUS<br>MANAGEMENT</div><nav id="mods" aria-label="Modules"><button class="b" data-mod="map" aria-pressed="true">FLOOR MAP</button><button class="b" data-mod="att" aria-pressed="false">ATTENDANCE</button></nav><div id="sw"><input id="q" type="search" autocomplete="off" placeholder="Search rooms, labs, people or facilities..." aria-label="Search rooms"><div id="sg" class="g" role="listbox"></div></div><span style="flex:1"></span><button class="b" data-t="n" aria-label="Notifications">🔔</button><button class="b" data-t="p" aria-label="Profile">◉</button><button class="b" data-t="s" aria-label="Settings">⚙</button></header>
+<div id="fl">
+<button class="b" id="fab" aria-label="Open panel">AI</button>
+<aside id="lp" class="g" aria-label="Room finder">
+<p class="cap">AI Room Finder</p><input id="ai" class="m" style="width:100%;height:42px;border-radius:12px;border:1px solid var(--bd);background:rgba(255,255,255,.04);padding:0 12px;outline:0" placeholder="Free room for 30 students…" aria-label="Ask the room finder"><div id="air" style="margin-top:8px"></div>
+<p class="cap" style="margin-top:14px">You are here</p><div class="m">Floor 1 · Stairs landing</div>
+<p class="cap" style="margin-top:14px" id="dn">Today</p><div id="tdy"></div>
+<p class="cap" style="margin-top:14px">Rooms on this floor</p><div id="chips"></div>
+<div style="margin-top:12px"><button class="b" id="sq" style="width:100%">CALL THE SQUAD</button><div id="sqp"></div></div>
+</aside>
+<aside id="rp" class="g" hidden></aside><aside id="nv" class="g" hidden></aside>
+<nav id="fs" class="g" aria-label="Floors"></nav>
+<div id="cc" class="g" role="toolbar" aria-label="Camera"><button class="b" data-v="3d">3D</button><button class="b" data-v="2d">2D</button><button class="b" data-v="top">TOP VIEW</button><button class="b" data-z="-1" aria-label="Zoom in">+</button><button class="b" data-z="1" aria-label="Zoom out">−</button><button class="b" id="rs">RESET</button></div>
+<footer id="bar" class="g"><div><p class="cap" style="margin:0">Next class</p><b id="ncn">—</b><div class="t2 m" id="ncr"></div></div><div><p class="cap" style="margin:0">Starts in</p><div id="cdn" class="m">--:--:--</div></div><button class="b p" id="ncg">NAVIGATE</button><label class="t2 m" style="font-size:11px">Demo time <input type="time" id="sim" aria-label="Simulate time"></label><button class="b" id="live">LIVE</button></footer>
+</div>
+<main id="att" aria-label="Attendance Compass">
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 class="px">Attendance Compass</h1>
+    <p>Pick your section, type in your attendance, and see exactly how many classes you can skip and how many you have to sit through.</p>
+  </div>
+  <div class="today"><span>Today</span><b class="px" id="todayLabel"></b><span id="semLabel"></span></div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <a href="#p1" class="on">Calculator</a>
+  <a href="#charts">Charts</a>
+  <a href="#od">OD simulator</a>
+  <a href="#tt">Timetable</a>
+</nav>
+
+<!-- PHASE 1 -->
+<section class="panel" id="p1">
+  <p class="phase px">Step 1</p>
+  <h2 class="px">The Core Calculator</h2>
+  <div class="grid">
+    <label class="f">Class section
+      <select id="section"></select>
+    </label>
+    <label class="f">Today's date
+      <input type="date" id="today">
+    </label>
+    <label class="f">Planning date (a day in the future)
+      <input type="date" id="plan">
+    </label>
+    <label class="f">Minimum attendance (%)
+      <input type="number" id="thr" min="1" max="100" step="1">
+    </label>
+    <label class="f">Goal attendance (%)
+      <input type="number" id="tgt" min="1" max="100" step="1">
+    </label>
+    <label class="f">Same % for every subject
+      <span class="fillrow"><input type="number" id="fillv" min="0" max="100" step="0.5" placeholder="e.g. 82"><button class="btn alt" id="fillb" type="button">Apply</button></span>
+    </label>
+  </div>
+  <details>
+    <summary>Semester dates and holidays (edit if your calendar differs)</summary>
+    <div class="grid" style="margin-top:10px">
+      <label class="f">First day of classes<input type="date" id="start"></label>
+      <label class="f">Last day of classes<input type="date" id="end"></label>
+      <label class="f" style="grid-column:1/-1">Holidays (yyyy-mm-dd, separated by commas)
+        <textarea id="hol"></textarea>
+      </label>
+    </div>
+    <p class="note warn">The last day of classes and the holiday list are my defaults, not from your dataset. Change them to match the official academic calendar and every number below updates.</p>
+  </details>
+
+  <h3 class="px">Your attendance by subject</h3>
+  <div class="subs" id="subs"></div>
+
+  <h3 class="px">What the numbers say</h3>
+  <div class="kpis" id="kpis"></div>
+  <div id="alerts"></div>
+  <h3 class="px">Subject by subject</h3>
+  <div class="tw"><table id="tbl"></table></div>
+  <p class="note" id="foot1"></p>
+</section>
+
+<!-- PHASE 2 -->
+<section class="panel" id="p2">
+  <p class="phase px">Step 2</p>
+  <h2 class="px">Visuals, Leaves &amp; The AI Assistant</h2>
+
+  <h3 class="px" id="charts">Charts</h3>
+  <div class="charts">
+    <div class="chart"><h4 class="px">Overall attendance health</h4><div id="cDonut"></div></div>
+    <div class="chart"><h4 class="px">Each subject vs the minimum</h4><div id="cBars"></div>
+      <div class="legend"><span><i style="background:var(--frame)"></i>Now</span><span><i style="background:transparent;border:2px solid var(--green)"></i>If you attend every class from today</span></div></div>
+    <div class="chart" style="grid-column:1/-1"><h4 class="px">Overall % until the semester ends</h4><div id="cLine"></div>
+      <div class="legend"><span><i style="background:var(--green)"></i>Attend everything</span><span><i style="background:var(--red)"></i>Skip everything</span><span><i style="background:var(--gold)"></i>Skip until planning date, then attend</span></div></div>
+  </div>
+
+  <h3 class="px" id="od">The OD simulator</h3>
+  <p style="margin:0 0 10px">Enter the days of On-Duty (OD) or medical leave and watch the final percentage change.</p>
+  <div class="grid">
+    <label class="f">Leave starts<input type="date" id="odFrom"></label>
+    <label class="f">Leave ends<input type="date" id="odTo"></label>
+    <label class="f">How is this leave treated?
+      <select id="odMode">
+        <option value="present">Approved OD or medical leave (counts as present)</option>
+        <option value="absent">Ordinary leave (counts as absent)</option>
+      </select>
+    </label>
+    <label class="f">Other remaining classes
+      <select id="odRest">
+        <option value="all">I will attend all of them</option>
+        <option value="none">I will attend none of them</option>
+      </select>
+    </label>
+  </div>
+  <div id="odOut" style="margin-top:12px"></div>
+
+  <h3 class="px" id="tt">Your weekly timetable</h3>
+  <div class="tw"><table class="tt" id="ttbl"></table></div>
+  <div class="legend" id="ttleg"></div>
+</section>
+
+<footer>Built for the SRM IST Tiruchirappalli odd semester 2026-27 timetables. Classes before today are counted from the timetable, minus holidays, and your attended count is your percentage times that number (rounded). Attendance is capped at what the calendar allows.</footer>
+</div>
+
+<!-- Chatbot -->
+<button id="afab" class="px" aria-expanded="false" aria-controls="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.2A8 8 0 1 1 21 12z"/></svg>Ask Advisor</button>
+<div id="chat" role="dialog" aria-label="Attendance Advisor">
+  <header><b class="px">Attendance Advisor</b><button id="chatX" aria-label="Close chat">&times;</button></header>
+  <div id="msgs" aria-live="polite"></div>
+  <div class="chips" style="padding:0 10px" id="achips"></div>
+  <form id="cform"><input id="cin" autocomplete="off" placeholder="Ask about leave, bunking, targets..."><button class="btn" type="submit">Send</button></form>
+</div>
+
+</main>
+</div>
+<div id="tip" role="status"></div><div id="toast" role="status"></div>
+<script src="floor.js"></script>
+<script src="attendance.js"></script>
+<script src="scm.js"></script></body></html>
